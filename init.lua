@@ -26,4 +26,16 @@ end
 
 vim.opt.rtp:prepend(lazypath)
 
-require("lazy").setup({})
+require("lazy").setup({
+    {
+        "ibhagwan/fzf-lua",
+        dependencies = { "nvim-tree/nvim-web-devicons" },
+        keys = {
+            { "<leader>f", "<cmd>FzfLua files<cr>", desc = "Find files" },
+            { "<leader>lg", "<cmd>FzfLua live_grep<cr>", desc = "Live grep" },
+        },
+        opts = {},
+    },
+})
+
+require("fzf-lua").register_ui_select()
