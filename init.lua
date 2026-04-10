@@ -5,11 +5,26 @@ vim.opt.splitright=true
 vim.opt.expandtab=true
 vim.opt.tabstop=4
 vim.opt.shiftwidth=0 -- set to 0 to default to tabstop value
+vim.opt.ignorecase=true
+vim.opt.smartcase=false
 
 vim.g.clipboard = "xclip"
 vim.opt.clipboard = "unnamedplus"
 
 vim.g.mapleader = " "
+
+vim.keymap.set("n", "<Esc>", function()
+    if vim.v.hlsearch == 1 then
+        vim.cmd("nohlsearch")
+        vim.fn.setreg("/", "")
+        vim.schedule(function()
+            vim.api.nvim_echo({ { "" } }, false, {})
+            vim.cmd("redraw")
+        end)
+    end
+
+    return "<Esc>"
+end, { expr = true, silent = true })
 
 -- Keep delete/change operations from overwriting the system clipboard.
 local function black_hole_map(modes, lhs)
