@@ -66,8 +66,8 @@ require("lazy").setup({
     },
     {
       "williamboman/mason-lspconfig.nvim",
-      opts = { ensure_installed = {"lua_ls"} },
       dependencies = { "neovim/nvim-lspconfig", "williamboman/mason.nvim" },
+      opts = { ensure_installed = {"lua_ls", "jsonls", "ts_ls"} }
     },
     {
       'saghen/blink.cmp',
@@ -121,12 +121,162 @@ require("lazy").setup({
         fuzzy = { implementation = "prefer_rust_with_warning" }
       },
       opts_extend = { "sources.default" }
+    },
+    {
+        "https://github.com/farmergreg/vim-lastplace",
+        event = "BufReadPost",
+    },
+    -- Treesitter config
+    {
+      "nvim-treesitter/nvim-treesitter",
+      lazy = false,
+      build = ":TSUpdate",
+      config = function()
+        require("nvim-treesitter").setup({
+          install_dir = vim.fn.stdpath("data") .. "/site",
+        })
+
+        require("nvim-treesitter").install({
+          "lua",
+          "vim",
+          "typescript",
+          "tsx",
+          "javascript",
+          "jsdoc",
+          "json",
+          "html",
+          "css",
+          "rust",
+          "c_sharp"
+        })
+      end,
+    },
+    -- Tokyo night color scheme
+    {
+      "folke/tokyonight.nvim",
+      lazy = false,
+      priority = 1000,
+      config = function()
+        require("tokyonight").setup({
+          style = "night", -- storm | moon | night | day
+          transparent = false,
+          terminal_colors = true,
+          styles = {
+            comments = { italic = true },
+            keywords = { italic = true },
+            functions = {},
+            variables = {},
+          },
+        })
+
+        vim.cmd.colorscheme("tokyonight")
+      end,
     }
+})
+
+-- Enable Treesitter-powered editing features for supported filetypes.
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = {
+    "lua",
+    "vim",
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+    "json",
+    "html",
+    "css",
+    "rust",
+    "cs",
+  },
+  callback = function(args)
+    vim.treesitter.start(args.buf)
+    vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+
+    local win = vim.api.nvim_get_current_win()
+    vim.wo[win].foldmethod = "expr"
+    vim.wo[win].foldexpr = "v:lua.vim.treesitter.foldexpr()"
+    vim.wo[win].foldlevel = 99
+  end,
 })
 
 require("fzf-lua").register_ui_select()
 
-vim.lsp.enable("lua_ls")
+-- Typescript lsp config
+
+vim.lsp.config("ts_ls", {
+  init_options = {
+    hostInfo = "neovim",
+    maxTsServerMemory = 4096,
+    disableAutomaticTypingAcquisition = true,
+
+    preferences = {
+      includeCompletionsForModuleExports = true,
+      includeCompletionsForImportStatements = true,
+      includeCompletionsWithSnippetText = true,
+      includeCompletionsWithInsertText = true,
+      includeAutomaticOptionalChainCompletions = true,
+      includeCompletionsWithClassMemberSnippets = true,
+      includeCompletionsWithObjectLiteralMethodSnippets = true,
+      useLabelDetailsInCompletionEntries = true,
+      allowIncompleteCompletions = true,
+
+      importModuleSpecifierPreference = "shortest",
+      importModuleSpecifierEnding = "auto",
+      quotePreference = "single",
+
+      autoImportFileExcludePatterns = {
+        "**/dist/**",
+        "**/build/**",
+        "**/.next/**",
+        "**/coverage/**",
+      },
+      preferTypeOnlyAutoImports = true,
+      includePackageJsonAutoImports = "auto",
+
+      providePrefixAndSuffixTextForRename = true,
+      provideRefactorNotApplicableReason = true,
+      allowRenameOfImportPath = true,
+      excludeLibrarySymbolsInNavTo = true,
+      displayPartsForJSDoc = true,
+      generateReturnInDocTemplate = true,
+
+      includeInlayParameterNameHints = "all",
+      includeInlayParameterNameHintsWhenArgumentMatchesName = true,
+      includeInlayFunctionLikeReturnTypeHints = true,
+      includeInlayEnumMemberValueHints = true,
+      includeInlayFunctionParameterTypeHints = true,
+      includeInlayVariableTypeHints = true,
+      includeInlayPropertyDeclarationTypeHints = true,
+      interactiveInlayHints = true,
+    },
+
+    tsserver = {
+      useSyntaxServer = "auto",
+    },
+  },
+
+  settings = {
+    typescript = {
+      inlayHints = {
+        includeInlayParameterNameHints = "all",
+        includeInlayParameterNameHintsWhenArgumentMatchesName = true,
+        includeInlayFunctionLikeReturnTypeHints = true,
+        includeInlayEnumMemberValueHints = true,
+      }
+    },
+    javascript = {
+      inlayHints = {
+        includeInlayParameterNameHints = "all",
+        includeInlayParameterNameHintsWhenArgumentMatchesName = true,
+        includeInlayFunctionLikeReturnTypeHints = true,
+        includeInlayEnumMemberValueHints = true,
+      },
+    }
+  },
+})
+
+vim.lsp.enable({"lua_ls", "jsonls", "ts_ls"})
 
 -- diagnostics UI config
 vim.diagnostic.config({
@@ -136,7 +286,7 @@ vim.diagnostic.config({
   },
   virtual_text = {
     spacing = 2,
-    prefix = "●",
+    prefix = "●"
   },
   signs = true,
   underline = true,
