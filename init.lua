@@ -75,6 +75,27 @@ require("lazy").setup({
         opts = {},
     },
     {
+      "stevearc/oil.nvim",
+      dependencies = { "nvim-tree/nvim-web-devicons" },
+      config = function()
+        require("oil").setup({
+          columns = { "icon" },
+          keymaps = {
+            ["<C-h>"] = false,
+            ["<M-h>"] = "actions.select_split",
+            ["<tab>"] = "actions.select",
+            ["<s-tab>"] = { "actions.parent", mode = "n" },
+          },
+          view_options = {
+            show_hidden = true,
+          },
+        })
+
+        vim.keymap.set("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" })
+        vim.keymap.set("n", "<space>-", require("oil").toggle_float)
+      end,
+    },
+    {
       "neovim/nvim-lspconfig",
     },
     {
@@ -86,7 +107,7 @@ require("lazy").setup({
     {
       "williamboman/mason-lspconfig.nvim",
       dependencies = { "neovim/nvim-lspconfig", "williamboman/mason.nvim" },
-      opts = { ensure_installed = {"lua_ls", "jsonls", "ts_ls"} }
+      opts = { ensure_installed = {"lua_ls", "jsonls", "ts_ls", "rust_analyzer"} }
     },
     {
       'saghen/blink.cmp',
@@ -115,7 +136,7 @@ require("lazy").setup({
         -- C-k: Toggle signature help (if signature.enabled = true)
         --
         -- See :h blink-cmp-config-keymap for defining your own keymap
-        keymap = { preset = 'default' },
+        keymap = { preset = 'super-tab' },
 
         appearance = {
           -- 'mono' (default) for 'Nerd Font Mono' or 'normal' for 'Nerd Font'
@@ -259,7 +280,6 @@ vim.lsp.config("ts_ls", {
       excludeLibrarySymbolsInNavTo = true,
       displayPartsForJSDoc = true,
       generateReturnInDocTemplate = true,
-
       includeInlayParameterNameHints = "all",
       includeInlayParameterNameHintsWhenArgumentMatchesName = true,
       includeInlayFunctionLikeReturnTypeHints = true,
@@ -295,7 +315,7 @@ vim.lsp.config("ts_ls", {
   },
 })
 
-vim.lsp.enable({"lua_ls", "jsonls", "ts_ls"})
+vim.lsp.enable({"lua_ls", "jsonls", "ts_ls", "denols", "rust_analyzer"})
 
 -- diagnostics UI config
 vim.diagnostic.config({
