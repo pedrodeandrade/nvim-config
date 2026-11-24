@@ -84,7 +84,20 @@ vim.lsp.config("ts_ls", {
   },
 })
 
-vim.lsp.enable({ "lua_ls", "jsonls", "ts_ls", "denols", "rust_analyzer", "clangd" })
+-- Elixir / Phoenix language server.
+-- Root detection is supplied by nvim-lspconfig,
+-- including support for umbrella projects.
+vim.lsp.config("expert", {
+  cmd = { "expert", "--stdio" },
+  filetypes = {
+    "elixir",
+    "eelixir",
+    "heex",
+    "surface",
+  },
+})
+
+vim.lsp.enable({ "lua_ls", "jsonls", "ts_ls", "denols", "rust_analyzer", "clangd", "expert" })
 
 vim.diagnostic.config({
   float = {

@@ -20,6 +20,10 @@ return {
       "rust",
       "c_sharp",
       "c",
+      "elixir",
+      "eex",
+      "heex",
     })
   end,
 }
+

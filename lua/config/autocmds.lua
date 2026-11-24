@@ -1,6 +1,16 @@
--- Use two-space indentation in web languages.
+-- Use two-space indentation in web languages and Elixir.
 vim.api.nvim_create_autocmd("FileType", {
-  pattern = { "javascript", "javascriptreact", "typescript", "typescriptreact", "html", "css" },
+  pattern = {
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+    "html",
+    "css",
+    "elixir",
+    "eelixir",
+    "heex",
+  },
   callback = function(args)
     vim.bo[args.buf].expandtab = true
     vim.bo[args.buf].tabstop = 2
@@ -27,14 +37,26 @@ vim.api.nvim_create_autocmd("FileType", {
     "cpp",
     "objc",
     "objcpp",
+    "elixir",
+    "eelixir",
+    "heex",
   },
   callback = function(args)
-    vim.treesitter.start(args.buf)
-    vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+    local ok = pcall(vim.treesitter.start, args.buf)
+
+    if not ok then
+      return
+    end
+
+    vim.bo[args.buf].indentexpr =
+      "v:lua.require'nvim-treesitter'.indentexpr()"
 
     local win = vim.api.nvim_get_current_win()
+
     vim.wo[win].foldmethod = "expr"
-    vim.wo[win].foldexpr = "v:lua.vim.treesitter.foldexpr()"
+    vim.wo[win].foldexpr =
+      "v:lua.vim.treesitter.foldexpr()"
     vim.wo[win].foldlevel = 99
   end,
 })
+
