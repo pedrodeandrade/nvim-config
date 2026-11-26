@@ -15,6 +15,11 @@ end, { expr = true, silent = true })
 -- Open a blank line below without leaving normal mode.
 vim.keymap.set("n", "<C-CR>", "o<Esc>", { silent = true })
 
+-- Open QuickFix
+vim.keymap.set("n", "<leader>q", "<cmd>copen<CR>", {
+  desc = "Open quickfix list",
+})
+
 -- Keep delete/change operations from overwriting the system clipboard.
 local function black_hole_map(modes, lhs)
   vim.keymap.set(modes, lhs, function()
