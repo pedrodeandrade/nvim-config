@@ -3,16 +3,19 @@ vim.api.nvim_create_autocmd("LspAttach", {
   callback = function(args)
     local client = vim.lsp.get_client_by_id(args.data.client_id)
 
-    vim.keymap.set("n", "K", vim.lsp.buf.hover, {
+    -- Go to definition.
+    vim.keymap.set("n", "gd", vim.lsp.buf.definition, {
       buffer = args.buf,
-      desc = "LSP hover information",
+      desc = "LSP go to definition",
     })
 
+    -- Enable inlay hints when supported.
     if client and client:supports_method("textDocument/inlayHint", args.buf) then
       vim.lsp.inlay_hint.enable(true, { bufnr = args.buf })
     end
   end,
 })
+
 
 vim.lsp.config("ts_ls", {
   init_options = {
