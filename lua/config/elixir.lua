@@ -218,25 +218,6 @@ function M.setup()
       end, vim.tbl_extend("force", opts, {
         desc = "Elixir: IEx session",
       }))
-
-      -- Format Elixir source files on save.
-      if vim.bo[bufnr].filetype == "elixir" then
-        vim.api.nvim_clear_autocmds({
-          group = group,
-          event = "BufWritePre",
-          buffer = bufnr,
-        })
-
-        vim.api.nvim_create_autocmd(
-          "BufWritePre", {
-            group = group,
-            buffer = bufnr,
-            callback = function()
-              format_buffer(bufnr)
-            end,
-          }
-        )
-      end
     end,
   })
 end
